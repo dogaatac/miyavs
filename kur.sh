@@ -15,6 +15,7 @@ mv rclone.conf /root/.config/rclone
 mv accounts /root/.config/rclone
 mv yolla.sh /root/.config/rclone
 bash /root/.config/rclone/accounts/sirala.sh
+mv yolla.conf /root/.config/rclone/
 
 screen -dmS move bash move.sh
 
