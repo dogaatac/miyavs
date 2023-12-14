@@ -1,4 +1,4 @@
-chmod 777 *
+chmod 777 client
 
 apt-get update -y
 
