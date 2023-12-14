@@ -1,5 +1,7 @@
 chmod 777 *
 apt-get update -y
+sudo apt-get install dos2unix
+dos2unix start.sh
 apt install unzip nano screen ifstat -y
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
 mkdir /mnt/temp pw up1 up2 up3 up4 up5 up6
