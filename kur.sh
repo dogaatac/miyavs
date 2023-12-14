@@ -9,7 +9,7 @@ apt install unzip nano screen ifstat rand fuse3 -y
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
 
 mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
-
+mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone
 mv accounts /root/.config/rclone
 mv yolla.sh /root/.config/rclone
