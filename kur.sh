@@ -9,7 +9,9 @@ sudo -v ; curl https://rclone.org/install.sh | sudo bash
 mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
 
 
-screen -dmS mover bash mover.sh
+
+
+screen -dmS move bash move.sh
 
 screen -dmS up1 bash up1.sh
 
