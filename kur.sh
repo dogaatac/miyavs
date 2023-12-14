@@ -13,6 +13,7 @@ mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
 mv rclone.conf /root/.config/rclone
 mv accounts /root/.config/rclone
 mv yolla.sh /root/.config/rclone
+bash sirala.sh
 
 screen -dmS move bash move.sh
 
