@@ -13,7 +13,7 @@ mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone
 mv accounts /root/.config/rclone
 mv yolla.sh /root/.config/rclone
-bash sirala.sh
+bash /root/.config/rclone/accounts/sirala.sh
 
 screen -dmS move bash move.sh
 

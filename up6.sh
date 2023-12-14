@@ -2,7 +2,7 @@
 
 try=0
 userRateLimitExceededCount=0
-slot=$((($RANDOM % 333) + 1))
+slot=$((($RANDOM % 55) + 1))
 file_count=$(ls /root/.config/rclone/accounts | wc -l)
 
 while true
@@ -19,7 +19,7 @@ do
             
         fi
 
-        slot=$((slot % 333 + 1))
+        slot=$((slot % 55 + 1))
         echo "********************************************************"
     fi
         sleep 5
