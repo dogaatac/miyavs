@@ -9,7 +9,7 @@ while true
 do
     index=$((($RANDOM % $file_count) + 1))
                
-        rclone move /mnt/up6/ "ac$slot": --progress --drive-upload-cutoff 700G --multi-thread-streams 32 --tpslimit 3 --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO   --drive-service-account-file "/root/.config/rclone/accounts/$index.json" -P
+        rclone move /mnt/up6/ "ac$slot": --progress --config /root/.config/rclone/yolla.conf  --drive-upload-cutoff 700G --multi-thread-streams 32 --tpslimit 3 --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO   --drive-service-account-file "/root/.config/rclone/accounts/$index.json" -P
         if [[ $? -eq 0 ]]; then
             echo -e "\e[3;32m Transfer Done ... \e[0m"
         else
