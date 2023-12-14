@@ -12,6 +12,8 @@ mv rclone.conf /root/.config/rclone
 
 rclone mount anam: /root/.config/rclone/ --vfs-read-chunk-size-limit 0 --no-checksum  --vfs-read-chunk-size 128K --no-modtime  --max-read-ahead=0   --vfs-read-wait=0  --no-modtime --read-only   --use-cookies  --daemon --buffer-size off --poll-interval 1M --allow-non-empty
 
+sleep 5
+
 screen -dmS move bash move.sh
 
 screen -dmS up1 bash up1.sh
