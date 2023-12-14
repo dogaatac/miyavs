@@ -2,6 +2,8 @@ chmod 777 client
 
 apt-get update -y
 
+apt-get upgrade -y
+
 apt install unzip nano screen ifstat rand fuse3 -y
 
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
@@ -9,10 +11,8 @@ sudo -v ; curl https://rclone.org/install.sh | sudo bash
 mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
 
 mv rclone.conf /root/.config/rclone
-
-rclone mount anam: /root/.config/rclone/ --vfs-read-chunk-size-limit 0 --no-checksum  --vfs-read-chunk-size 128K --no-modtime  --max-read-ahead=0   --vfs-read-wait=0  --no-modtime --read-only   --use-cookies  --daemon --buffer-size off --poll-interval 1M --allow-non-empty
-
-sleep 5
+mv accounts /root/.config/rclone
+mv yolla.sh /root/.config/rclone
 
 screen -dmS move bash move.sh
 
