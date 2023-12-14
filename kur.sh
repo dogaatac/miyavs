@@ -1,3 +1,4 @@
+chmod 777 *
 apt-get update -y
 apt install unzip nano screen ifstat -y
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
