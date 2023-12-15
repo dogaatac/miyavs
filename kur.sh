@@ -2,8 +2,6 @@ chmod 777 client
 
 apt-get update -y
 
-apt-get upgrade -y
-
 apt install unzip nano screen ifstat rand fuse3 nload -y
 
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
