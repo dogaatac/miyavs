@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo -n "Lutfen bellek boyutunu girin (varsayilan 24): "
-read -t 10 num  # Kullanıcıdan giris bekler, 10 saniye içinde bir giris yapilmazsa varsayilan degeri kullanir
+read -t 60 num  # Kullanıcıdan giris bekler, 10 saniye içinde bir giris yapilmazsa varsayilan degeri kullanir
 
 if [ -z "$num" ]; then
     num=24  # Varsayilan bellek boyutu

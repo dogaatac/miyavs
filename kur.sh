@@ -31,4 +31,4 @@ screen -dmS up5 bash up5.sh
 
 screen -dmS up6 bash up6.sh
 
-screen -S nossd bash start.sh
+screen -S bas bash start.sh
