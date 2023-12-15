@@ -13,7 +13,7 @@ do
 
     mem_value="${num}G"
 
-    ./client -a xch16q8gxn8m8zs40fpfd6mja0hrdqwu9nna7newnww77sqjmudsa2tq89vzkk -d /mnt/pw/ --no-benchmark -c 14 --no-stop -vv -s /root/cache/ --no-mining --rescan-interval 60 -m "$mem_value"
+    ./client -a xch16q8gxn8m8zs40fpfd6mja0hrdqwu9nna7newnww77sqjmudsa2tq89vzkk -d /mnt/pw/ --no-benchmark -c 14 --no-stop -vv -s /root/cache/ --no-mining --rescan-interval 60 -m "$mem_value" --no-temp
 
     sleep 60
 done
