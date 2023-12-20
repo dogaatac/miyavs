@@ -1,26 +1,34 @@
-#!/bin/bash
+import os
+import random
+import subprocess
+import time
 
-try=0
-userRateLimitExceededCount=0
-slot=$((($RANDOM % 55) + 1))
-file_count=$(ls /root/.config/rclone/accounts | wc -l)
+while True:
+    # Rclone config dosyasındaki "ac" ile başlayan satırları al
+    with open('/root/.config/rclone/yolla.conf', 'r') as file:
+        ac_lines = [line.strip() for line in file if line.startswith('[ac')]
 
-while true
-do
-    index=$((($RANDOM % $file_count) + 1))
-               
-        rclone move /mnt/up4/ "ac$slot": --progress --config /root/.config/rclone/yolla.conf --drive-upload-cutoff 700G --multi-thread-streams 32 --tpslimit 3 --drive-stop-on-upload-limit --drive-chunk-size 256M --no-traverse --ignore-existing --log-level INFO   --drive-service-account-file "/root/.config/rclone/accounts/$index.json" -P
-        if [[ $? -eq 0 ]]; then
-            echo -e "\e[3;32m Transfer Done ... \e[0m"
-        else
-            echo -e "\e[3;31m Transfer Failed ... \e[0m"
-            if [[ $index -eq 1 ]]; then
-                userRateLimitExceededCount=$(($userRateLimitExceededCount + 1))
-            
-        fi
+    # Rasgele bir "ac" satırını seç
+    selected_ac_line = random.choice(ac_lines)
 
-        slot=$((slot % 55 + 1))
-        echo "********************************************************"
-    fi
-        sleep 5
-done
+    # Seçilen "ac" satırından acX kısmını al
+    ac_name = selected_ac_line.split('[')[1].split(']')[0]
+
+    # /root/.config/rclone/accounts/ klasöründe .json dosyalarını al
+    json_files = [file for file in os.listdir('/root/.config/rclone/accounts/') if file.endswith('.json')]
+
+    # Rasgele bir .json dosyasını seç
+    selected_json_file = random.choice(json_files)
+
+    # Bilgilendirme mesajı
+    print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
+
+    # Rclone move komutunu oluştur
+    command = f'rclone move /mnt/up4/ "{ac_name}": --progress --config /root/.config/rclone/yolla.conf  --drive-upload-cutoff 700G --multi-thread-streams 32 --tpslimit 3 --drive-stop-on-upload-limit --drive-chunk-size 256M --no-traverse --ignore-existing --log-level INFO   --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+
+    # Komutu çalıştır
+    subprocess.run(command, shell=True)
+
+    # 1 dakika bekle
+    print("1 dakika bekleniyor...")
+    time.sleep(60)  # 1 dakika bekleme
