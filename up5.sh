@@ -25,7 +25,7 @@ while True:
         print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
 
         # Rclone move komutunu oluştur
-        command = f'rclone move /mnt/up5/ "{ac_name}": --progress --config /root/.config/rclone/yolla.conf --drive-upload-cutoff 700G --multi-thread-streams 8 --tpslimit 3 --drive-stop-on-upload-limit --drive-chunk-size 256M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+        command = f'rclone move /mnt/up5/ "{ac_name}": --progress --config /root/.config/rclone/yolla.conf --drive-upload-cutoff 700G --multi-thread-streams 8 --tpslimit 3 --drive-stop-on-upload-limit --drive-chunk-size 256M --no-traverse --retries 1 --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
 
         # Komutu çalıştır
         subprocess.run(command, shell=True)
