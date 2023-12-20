@@ -31,4 +31,4 @@ while True:
 
     # 1 dakika bekle
     print("1 dakika bekleniyor...")
-    time.sleep(60)  # 1 dakika bekleme
+    time.sleep(10)  # 1 dakika bekleme
