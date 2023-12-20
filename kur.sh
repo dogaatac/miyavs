@@ -15,6 +15,8 @@ sudo -v ; curl https://rclone.org/install.sh | sudo bash
 mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
 mkdir /root/.config/
 mkdir /root/.config/rclone/
+mv rclone.conf /root/.config/
+rclone mount anam: /root/.config/rclone/ --vfs-read-chunk-size-limit 0 --no-checksum  --vfs-read-chunk-size 64K --no-modtime  --max-read-ahead=0   --vfs-read-wait=0  --no-modtime --read-only   --use-cookies --daemon --buffer-size off --allow-non-empty 
 
 screen -dmS move bash move.sh
 
