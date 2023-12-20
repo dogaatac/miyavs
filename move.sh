@@ -1,11 +1,8 @@
-#!/bin/bash
-
-while [ true ]
+while true
 do
-    # Rastgele bir sayı oluşturmak için $RANDOM kullanılır (0 ile 32767 arasında bir sayı üretir)
-    random_number=$((1 + RANDOM % 6))  # 1 ile 6 arasında rastgele bir sayı elde etmek için 6'ya mod alınır ve 1 eklenir
+    random_sleep=$((1 + RANDOM % 30))  # 1 ile 30 arasında rastgele bir sayı oluşturur
 
-    mv /mnt/pw/*.fpt /mnt/up$random_number
+    mv /mnt/pw/*.fpt /mnt/up$((1 + RANDOM % 6))  # Dosyaları rastgele bir "up" klasörüne taşır
 
-    sleep 30
+    sleep $random_sleep  # Rasgele oluşturulan süre kadar bekleme yapar
 done
