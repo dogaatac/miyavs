@@ -19,7 +19,7 @@ mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
 mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
-rclone mount anam: /root/.config/rclone/ --vfs-read-chunk-size-limit 0 --no-checksum  --vfs-read-chunk-size 512K --no-modtime   --vfs-read-wait=0   --read-only   --daemon --buffer-size off --allow-non-empty --vfs-cache-mode full
+screen -dmS mount bash mount.sh
 
 screen -dmS move bash move.sh
 
