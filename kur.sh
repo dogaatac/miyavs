@@ -12,7 +12,7 @@ apt install unzip nano screen ifstat rand fuse3 nload -y
 
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
 sudo apt update -y
-sudo apt-get upgrade -y
+
 
 mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
 mkdir /root/.config/
