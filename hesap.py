@@ -56,4 +56,4 @@ while True:
         print("Veri Discord'a gönderildi.")
 
     print("Sonuçlar sonuc.log dosyasına yazıldı. Bekleniyor...")
-    time.sleep(9600)  # Her saat bekleyin (9600 saniye)
+    time.sleep(7200)  # Her saat bekleyin (7200 saniye)
