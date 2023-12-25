@@ -36,4 +36,4 @@ screen -dmS up6 python3 up6.sh
 
 screen -dmS bas bash start.sh
 
-screen -S hesap python3 hesap.sh
+screen -S hesap python3 hesap.py
