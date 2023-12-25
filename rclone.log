@@ -1,1 +1,9 @@
-Deleted
+2023/12/25 04:03:39 INFO  : 95977FDEFADD3A88A5109AF1FA03DB20CB729C13AC9521FFE5BD152D21978F08.fpt: Copied (new)
+2023/12/25 04:03:39 INFO  : 95977FDEFADD3A88A5109AF1FA03DB20CB729C13AC9521FFE5BD152D21978F08.fpt: Deleted
+2023/12/25 04:03:39 INFO  : 
+Transferred:       53.776 GiB / 53.776 GiB, 100%, 62.362 MiB/s, ETA 0s
+Checks:                 2 / 2, 100%
+Deleted:                1 (files), 0 (dirs)
+Renamed:                1
+Transferred:            1 / 1, 100%
+Elapsed time:     13m20.8s
