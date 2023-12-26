@@ -2,6 +2,7 @@ import re
 from collections import defaultdict
 import requests
 import time
+from datetime import datetime, timedelta
 
 log_file_path = "/root/rclone.log"
 result_file_path = "sonuc.log"
@@ -16,14 +17,20 @@ while True:
     deleted_files_per_hour = defaultdict(int)
     total_files_deleted = 0
 
+    # Geçerli zamanı al
+    current_time = datetime.now()
+
     def count_deleted_files_per_hour(log_file):
         with open(log_file, "r") as file:
             for line in file:
                 if "Deleted" in line:
-                    match = re.search(r"\d{4}/\d{2}/\d{2} (\d{2}):\d{2}:\d{2}", line)
+                    match = re.search(r"(\d{4}/\d{2}/\d{2} \d{2}:\d{2}):\d{2}", line)
                     if match:
-                        hour = int(match.group(1))
-                        deleted_files_per_hour[hour] += 1
+                        time_str = match.group(1)
+                        log_time = datetime.strptime(time_str, "%Y/%m/%d %H:%M")
+                        if current_time - log_time <= timedelta(days=1):
+                            hour = log_time.hour
+                            deleted_files_per_hour[hour] += 1
 
     count_deleted_files_per_hour(log_file_path)
 
@@ -56,4 +63,6 @@ while True:
         print("Veri Discord'a gönderildi.")
 
     print("Sonuçlar sonuc.log dosyasına yazıldı. Bekleniyor...")
-    time.sleep(7200)  # Her saat bekleyin (7200 saniye)
+    
+    # Bir saat bekleyin (3600 saniye)
+    time.sleep(3600)
