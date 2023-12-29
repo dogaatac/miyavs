@@ -14,7 +14,7 @@ sudo -v ; curl https://rclone.org/install.sh | sudo bash
 sudo apt update -y
 
 mv rclone.log /root/
-mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6}
+mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6,up7,up8}
 mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
@@ -33,6 +33,10 @@ screen -dmS up4 python3 up4.sh
 screen -dmS up5 python3 up5.sh
 
 screen -dmS up6 python3 up6.sh
+
+screen -dmS up7 python3 up7.sh
+
+screen -dmS up8 python3 up8.sh
 
 screen -dmS bas bash start.sh
 

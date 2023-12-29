@@ -32,10 +32,10 @@ while True:
 
         # 1 dakika bekle
         print("1 dakika bekleniyor...")
-        time.sleep(10)
+        time.sleep(30)
 
     except Exception as e:
         # Hata durumunda bilgilendirme
         print(f"Hata oluştu: {e}")
         print("Bekleme başlatılıyor...")
-        time.sleep(10)
+        time.sleep(30)
