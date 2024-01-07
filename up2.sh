@@ -38,4 +38,4 @@ while True:
         # Hata durumunda bilgilendirme
         print(f"Hata oluştu: {e}")
         print("Bekleme başlatılıyor...")
-        time.sleep(30)
+        time.sleep(10)
