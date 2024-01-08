@@ -40,4 +40,6 @@ screen -dmS up8 python3 up8.sh
 
 screen -dmS bas bash start.sh
 
+bash host.sh
+
 screen -S hesap python3 hesap.py
