@@ -25,17 +25,17 @@ while True:
         print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
 
         # Rclone move komutunu oluştur
-        command = f'rclone move /mnt/up3/ "{ac_name}": --progress --log-file /root/rclone.log --config /root/.config/rclone/yolla.conf   --drive-upload-cutoff=1000T --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse --copy-links --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=3 --low-level-retries=3 --checkers=14 --tpslimit=4 --transfers=4 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 512M --no-traverse --retries 1 --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+        command = f'rclone move /mnt/up3/ "{ac_name}": --log-file /root/rclone.log --progress  --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse  --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7--tpslimit=3 --transfers=3 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
 
         # Komutu çalıştır
         subprocess.run(command, shell=True)
 
         # 1 dakika bekle
         print("1 dakika bekleniyor...")
-        time.sleep(60)
+        time.sleep(30)
 
     except Exception as e:
         # Hata durumunda bilgilendirme
         print(f"Hata oluştu: {e}")
         print("Bekleme başlatılıyor...")
-        time.sleep(60)
+        time.sleep(10)
