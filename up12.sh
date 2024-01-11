@@ -21,18 +21,25 @@ while True:
         # Rasgele bir .json dosyasını seç
         selected_json_file = random.choice(json_files)
 
-        # Bilgilendirme mesajı
-        print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
+        # Proxy listesini dosyadan oku
+        with open('proxyler.txt', 'r') as proxy_file:
+            proxy_list = [line.strip() for line in proxy_file if line.strip()]
+
+        # Rasgele bir proxy seç
+        selected_proxy = random.choice(proxy_list)
 
         # Rclone move komutunu oluştur
-        command = f'rclone move /mnt/up12/ "{ac_name}": --log-file /root/rclone.log --progress  --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse  --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7 --tpslimit=3 --transfers=3 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+        command = f'HTTPS_PROXY=http://{selected_proxy} rclone move /mnt/up12/ "{ac_name}": --log-file /root/rclone.log --progress --no-check-certificate  --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse  --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7 --tpslimit=2 --transfers=2 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+
+        # Bilgilendirme mesajı
+        print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
 
         # Komutu çalıştır
         subprocess.run(command, shell=True)
 
         # 1 dakika bekle
         print("1 dakika bekleniyor...")
-        time.sleep(30)
+        time.sleep(60)
 
     except Exception as e:
         # Hata durumunda bilgilendirme

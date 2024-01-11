@@ -29,7 +29,7 @@ while True:
         selected_proxy = random.choice(proxy_list)
 
         # Rclone move komutunu oluştur
-        command = f'HTTPS_PROXY=http://{selected_proxy} rclone move /mnt/up3/ "{ac_name}": --log-file /root/rclone.log --progress --no-check-certificate  --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse  --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7 --tpslimit=1 --transfers=1 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+        command = f'HTTPS_PROXY=http://{selected_proxy} rclone move /mnt/up3/ "{ac_name}": --log-file /root/rclone.log --progress --no-check-certificate  --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse  --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7 --tpslimit=2 --transfers=2 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
 
         # Bilgilendirme mesajı
         print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
