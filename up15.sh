@@ -25,14 +25,26 @@ while True:
         with open('proxyler.txt', 'r') as proxy_file:
             proxy_list = [line.strip() for line in proxy_file if line.strip()]
 
-        # Rasgele bir proxy seç
-        selected_proxy = random.choice(proxy_list)
+        # Belirli bir olasılıkla proxy kullanma kararı al
+        use_proxy_probability = 0.5  # Örneğin, %50 olasılıkla proxy kullan
+        use_proxy = random.random() < use_proxy_probability
+
+        if use_proxy:
+            # Rasgele bir proxy seç
+            selected_proxy = random.choice(proxy_list)
+            https_proxy = f'HTTPS_PROXY=http://{selected_proxy} '
+        else:
+            # Proxy kullanmayacaksa boş bir değer ata
+            https_proxy = ''
 
         # Rclone move komutunu oluştur
-        command = f'HTTPS_PROXY=http://{selected_proxy} rclone move /mnt/up15/ "{ac_name}": --log-file /root/rclone.log --progress --no-check-certificate  --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse  --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7 --tpslimit=2 --transfers=2 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
+        command = f'{https_proxy}rclone move /mnt/up15/ "{ac_name}": --log-file /root/rclone.log --progress --no-check-certificate --config /root/.config/rclone/yolla.conf --drive-upload-cutoff=700G --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=1 --low-level-retries=1 --checkers=7 --tpslimit=2 --transfers=2 --fast-list --drive-stop-on-upload-limit --drive-chunk-size 128M --no-traverse --ignore-existing --log-level INFO --drive-service-account-file "/root/.config/rclone/accounts/{selected_json_file}" -P'
 
         # Bilgilendirme mesajı
-        print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'uyla transfer ediliyor...")
+        if use_proxy:
+            print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'u ve proxy ({selected_proxy}) ile transfer ediliyor...")
+        else:
+            print(f"Transfer başlatılıyor: {ac_name} kullanılarak {selected_json_file} service account'u ile proxy kullanılmadan transfer ediliyor...")
 
         # Komutu çalıştır
         subprocess.run(command, shell=True)
