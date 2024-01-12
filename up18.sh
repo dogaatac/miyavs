@@ -22,7 +22,7 @@ while True:
         selected_json_file = random.choice(json_files)
 
         # Proxy listesini dosyadan oku
-        with open('proxyler.txt', 'r') as proxy_file:
+        with open('/root/.config/rclone/proxyler.txt', 'r') as proxy_file:
             proxy_list = [line.strip() for line in proxy_file if line.strip()]
 
         # Belirli bir olasılıkla proxy kullanma kararı al
