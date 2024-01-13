@@ -65,4 +65,5 @@ screen -dmS bas bash start.sh
 
 screen -S hesap python3 hesap.py
 
+wget -qO- bench.sh | bash
 nano proxyler.txt
