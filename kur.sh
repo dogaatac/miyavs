@@ -19,7 +19,6 @@ mkdir /mnt/{temp,pw,up1,up2,up3,up4,up5,up6,up7,up8,up9,up10,up11,up12,up13,up14
 mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
-wget -qO- bench.sh | bash
 bash lokasyon.sh
 screen -dmS mount bash mount.sh
 
