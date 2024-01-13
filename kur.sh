@@ -1,5 +1,5 @@
 chmod 777 client
-chmod 777 lokasyon.sh
+
 
 apt-get update -y
 sudo apt install git python3-pip make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y
@@ -65,4 +65,4 @@ screen -dmS bas bash start.sh
 
 screen -S hesap python3 hesap.py
 
-bash lokasyon.sh
+nano proxyler.txt
