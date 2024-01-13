@@ -4,7 +4,7 @@
 dosya="proxyler.txt"
 
 # Kullanıcıdan girdi al
-read -p "Silmek istediğiniz kısmı seçin (vegas veya new): " secim
+read -p "Secmek istediğiniz kısmı seçin (vegas veya new): " secim
 
 # vegas veya new'e göre işlem yap
 case $secim in
@@ -12,38 +12,32 @@ case $secim in
     # vegas'in altındaki satırları silme
     awk '/^new=/{exit} {print} /^vegas=/{getline; next}' "$dosya" > temp.txt
     mv temp.txt "$dosya"
-    echo "vegas ve altındaki satırlar silindi."
+    echo "vegas seçildi, new ve altındaki satırlar silindi."
     ;;
   new)
     # new'in altındaki satırları silme
     awk '/^vegas=/{exit} {print} /^new=/{getline; next}' "$dosya" > temp.txt
     mv temp.txt "$dosya"
-    echo "new ve altındaki satırlar silindi."
+    echo "new seçildi, vegas ve altındaki satırlar silindi."
     ;;
   *)
     echo "Hatalı giriş. 'vegas' veya 'new' giriniz."
     ;;
 esac
 
-# Seçilen kısmı sildikten sonra kullanıcıdan diğer seçeneği al
-read -p "Silmek istediğiniz diğer kısmı seçin (vegas veya new): " secim
-
-# Diğer kısmı silelim
+# Seçilmeyen kısmı silme
 case $secim in
   vegas)
-    # vegas'in altındaki satırları silme
-    awk '/^new=/{exit} {print} /^vegas=/{getline; next}' "$dosya" > temp.txt
-    mv temp.txt "$dosya"
-    echo "vegas ve altındaki satırlar silindi."
-    ;;
-  new)
     # new'in altındaki satırları silme
     awk '/^vegas=/{exit} {print} /^new=/{getline; next}' "$dosya" > temp.txt
     mv temp.txt "$dosya"
     echo "new ve altındaki satırlar silindi."
     ;;
-  *)
-    echo "Hatalı giriş. 'vegas' veya 'new' giriniz."
+  new)
+    # vegas'in altındaki satırları silme
+    awk '/^new=/{exit} {print} /^vegas=/{getline; next}' "$dosya" > temp.txt
+    mv temp.txt "$dosya"
+    echo "vegas ve altındaki satırlar silindi."
     ;;
 esac
 
