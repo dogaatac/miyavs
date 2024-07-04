@@ -1,0 +1,24 @@
+# Config dosyasının yolunu belirtin
+config_file = 'yolla.conf'
+
+# Config dosyasını oku
+with open(config_file, 'r') as file:
+    lines = file.readlines()
+
+# root_folder_id = satırlarını sil
+new_lines = []
+skip = False
+for line in lines:
+    if line.strip().startswith('root_folder_id ='):
+        skip = True
+    elif line.strip().startswith('['):
+        skip = False
+
+    if not skip:
+        new_lines.append(line)
+
+# Yeni config dosyasını yaz
+with open('updated_rclone_config.txt', 'w') as file:
+    file.writelines(new_lines)
+
+print("Config dosyası başarıyla güncellendi.")
