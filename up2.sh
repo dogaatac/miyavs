@@ -38,7 +38,7 @@ while True:
             https_proxy = ''
 
         # Rclone move komutunu oluştur
-        command = f'{https_proxy}rclone move /mnt/up2/ "{ac_name}": --log-file /root/rclone.log  --config /root/.config/rclone/yolla.conf --user-agent="ISV|rclone.org|rclone/v1.61.0-beta.6610.beea4d511" --buffer-size=32M --drive-chunk-size=16M --drive-upload-cutoff=1000T --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse --copy-links --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=3 --low-level-retries=10 --checkers=14 --tpslimit=1 --transfers=3 --fast-list -P'
+        command = f'{https_proxy}rclone move /mnt/up2/ "{ac_name}": --log-file /root/rclone.log --progress --config /root/.config/rclone/yolla.conf --user-agent="ISV|rclone.org|rclone/v1.61.0-beta.6610.beea4d511" --buffer-size=32M --drive-chunk-size=16M --drive-upload-cutoff=1000T --drive-pacer-min-sleep=700ms --checksum --check-first --drive-acknowledge-abuse --copy-links --drive-stop-on-upload-limit --no-traverse --tpslimit-burst=0 --retries=3 --low-level-retries=10 --checkers=14 --tpslimit=1 --transfers=3 --fast-list -P'
 
         # Bilgilendirme mesajı
         if use_proxy:
