@@ -26,7 +26,7 @@ while True:
             proxy_list = [line.strip() for line in proxy_file if line.strip()]
 
         # Belirli bir olasılıkla proxy kullanma kararı al
-        use_proxy_probability = 0.4  # Örneğin, %40 olasılıkla proxy kullan
+        use_proxy_probability = 0.0  # Örneğin, %40 olasılıkla proxy kullan
         use_proxy = random.random() < use_proxy_probability
 
         if use_proxy:
