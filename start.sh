@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 
-while true
-do
-    cd "$(dirname "$(realpath "${BASH_SOURCE[0]:-$0}")")"
+while true; do
+   
+    TOTAL_RAM=$(free -g | awk '/^Mem:/{print $2}')
+    
+       cd "$(dirname "$(realpath "${BASH_SOURCE[0]:-$0}")")"
 
-       ./client -d /mnt/pw/ -c 12 --no-stop -vv -s /root/cache/ --no-temp --no-mining 
+        if [ "$TOTAL_RAM" -ge 110 ]; then
+                ./client -d /mnt/pw/ -c 11 --no-stop -vv -s /root/cache/ --no-temp --no-mining --no-benchmark
+    else
+        
+        ./client -d /mnt/pw/ -c 11 --no-stop -vv -s /root/cache/ --no-mining --no-benchmark
+    fi
 
+    # 60 saniye bekle
     sleep 60
 done
