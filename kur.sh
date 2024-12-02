@@ -22,11 +22,11 @@ mv rclone.conf /root/.config/rclone/
 
 screen -dmS move bash move.sh
 
-screen -dmS up1 python3 up1.sh
+screen -dmS up1 bash up1.sh
 
-screen -dmS up2 python3 up2.sh
+screen -dmS up2 bash up2.sh
 
-screen -dmS up3 python3 up3.sh
+screen -dmS up3 bash up3.sh
 
 
 screen -dmS bas bash start.sh
