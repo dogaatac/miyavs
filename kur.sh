@@ -35,13 +35,3 @@ screen -S hesap python3 hesap.py
 
 cd
 
-cd /miyavs/
-
-mv yolla.conf /root/.config/rclone/
-
-mv acc.zip /root/.config/rclone/
-
-cd /root/.config/rclone/
-
-unzip acc.zip
-
