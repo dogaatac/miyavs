@@ -8,8 +8,7 @@ log_file_path = "/root/rclone.log"
 result_file_path = "sonuc.log"
 discord_webhook_url = "https://discord.com/api/webhooks/1082696420043276438/IIWUID-XlOSzReMc59l6o3IhPhXjCTJMZp4IHKDWV6LXzSqWqEWZUTQd5LnbKq9Bq1HR"
 
-machine_name = input("Makinanın adını girin: ")
-hourly_price = float(input("Makinanın saatlik ücretini girin: "))
+user_email = input("E-posta adresinizi girin: ")  # Sadece e-posta adresini sor
 
 last_results = defaultdict(int)
 
@@ -41,22 +40,17 @@ while True:
     total_plots_sent = sum(last_results.values())
 
     with open(result_file_path, "w") as result_file:
-        result_file.write(f"**{machine_name} **\n")
+        result_file.write(f"Email: {user_email}\n")  # Sadece e-posta adresini ekle
         for hour, deleted_files in last_results.items():
-            if deleted_files != 0:  # Dosya silinmediyse bölme işlemi yapılacak
-                hour_price = hourly_price / deleted_files
-                result_file.write(f"Saat {hour:02}:00 - | plot: {deleted_files} |: {hour_price:.2f}\n")
-            else:
-                result_file.write(f" {hour:02}:00 - | : {deleted_files} | Ücret: 0\n")
+            result_file.write(f"Saat {hour:02}:00 - | plot: {deleted_files}\n")
 
-        total_hourly_price = hourly_price * 24 / total_files_deleted if total_files_deleted != 0 else 0
-        result_file.write(f"24 saat: {total_plots_sent} | ortalama: {total_hourly_price:.2f}\n")
+        result_file.write(f"24 saat: {total_plots_sent}\n")
 
     with open(result_file_path, "r") as result_file:
         current_result = result_file.read()
         payload = {
             "content": current_result,
-            "username": machine_name,
+            "username": "Log Report",  # Discord'da sabit bir isim kullanabilir
         }
         headers = {"Content-Type": "application/json"}
         requests.post(discord_webhook_url, json=payload, headers=headers)
