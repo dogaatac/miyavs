@@ -32,7 +32,7 @@ while true; do
 
     
     echo "rclone move işlemi $BUCKET_NAME bucket'ına başlatılıyor..." && \
-    rclone move /mnt/up1/ aws:$BUCKET_NAME/ --transfers=16 --checkers=32 --s3-chunk-size=32M --fast-list --multi-thread-streams=32 --low-level-retries=30 --timeout=15s --progress --log-file /root/rclone.log
+    rclone move /mnt/up1/ awsx:$BUCKET_NAME/ --transfers=16 --checkers=32 --s3-chunk-size=32M --fast-list --multi-thread-streams=32 --low-level-retries=30 --timeout=15s --progress --log-file /root/rclone.log
 
    
     echo "30 saniye bekleniyor..." && sleep 30
