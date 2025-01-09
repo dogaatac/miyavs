@@ -14,6 +14,7 @@ PARENT_WATCH_DIR="/mnt/up1"   # Ana dizin, bunun altında alt klasörler var
 CHUNK_REMOTE="chunk:"         # rclone config'te tanımlı remote (bölme)
 UPLOAD_REMOTE="crypt:"     # Hedef remote
 MOUNT_POINT="/root/check1"
+MAX_USAGE=5                   # Doluluk eşiği (%5)
 SLEEP_BETWEEN=60             # Her .fpt tamamlandıktan sonra bekleme (saniye)
 
 # Parça isimleri (rclone chunk konfigürasyonuna göre değişebilir)
