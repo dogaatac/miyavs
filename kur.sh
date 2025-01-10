@@ -6,7 +6,7 @@ sudo apt install git python3-pip make build-essential libssl-dev zlib1g-dev libb
 sudo add-apt-repository ppa:deadsnakes/ppa -y
 sudo apt update -y
 sudo apt install python3.10 -y
-
+apt install unzip -y
 
 
 apt install unzip nano screen ifstat rand fuse3 nload -y
@@ -30,8 +30,13 @@ screen -dmS up3 bash up3.sh
 
 
 screen -dmS bas bash start.sh
+mv accounts.zip /root/
+cd root
+mkdir check1
+mkdir check2
+mkdir check3
+unzip accounts.zip
 
-screen -S hesap python3 hesap.py
 
 cd
 

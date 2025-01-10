@@ -1,52 +1,37 @@
 #!/bin/bash
 
 ########################################################################
-# yeniup1.sh
-#  - /mnt/up3/ altında birden çok alt klasör olabilir (folderA, folderB vs.)
-#  - Yeni .fpt dosyası nerede bulunursa orada parçalansın (chunk) ve
-#    part1..part6 orada oluşsun.
-#  - Ardından "boş" 6'lı SA kümesi bul, part1..part6'yı sırasıyla upload et.
-#  - Tümü bitmeden yeni .fpt'ye geçme.
+# yeniup3.sh
+#
+# 1) /mnt/up3/ dizininde yeni *.fpt dosyası var mı?
+# 2) Bulduğunda rclone move => chunk: (chunker devrede).
+#    Orijinal .fpt silinir, .rclone_chunk.* + pointer .fpt nereye isterse koyar.
+# 3) Dosya adına göre find ile chunk dosyaları ve pointer dosyasını buluruz.
+# 4) Bir kere 6 SA grubu (hepsi boş mu) buluruz.
+# 5) part i => SA[i % 6].
+# 6) Son part (i == total-1) => ÖNCE pointer, SONRA part, ikisi de AYNI SA ile
+#    *iki ayrı rclone move* komutu = hata yok.
 ########################################################################
 
-# ---- Rclone ve klasör ayarları ----
-PARENT_WATCH_DIR="/mnt/up3"   # Ana dizin, bunun altında alt klasörler var
-CHUNK_REMOTE="chunk:"         # rclone config'te tanımlı remote (bölme)
-UPLOAD_REMOTE="crypt:"     # Hedef remote
+WATCH_DIR="/mnt/up3"
+FINAL_REMOTE="crypt:"
 MOUNT_POINT="/root/check3"
-MAX_USAGE=5                   # Doluluk eşiği (%5)
-SLEEP_BETWEEN=60             # Her .fpt tamamlandıktan sonra bekleme (saniye)
+MAX_USAGE=5
+SLEEP_BETWEEN=60
 
-# Parça isimleri (rclone chunk konfigürasyonuna göre değişebilir)
-PART_NAMES=( "part1" "part2" "part3" "part4" "part5" "part6" )
-
-# ---- Service Account (SA) ayarları ----
-ACCOUNTS_PARENT="/root/accounts"  # /root/accounts/<projectId>/...
+ACCOUNTS_PARENT="/root/accounts"
 GROUP_SIZE=6
-MAX_GROUP_INDEX=16  # (6*16=96) -> 1..16 gruplar
+MAX_GROUP_INDEX=16
 
-########################
-# FONKSİYONLAR
-########################
-
-# Bulduğumuz .fpt dosyasına göre, dizin ve dosya adlarını çekelim
-get_fpt_path_info() {
-    local fpt_file="$1"
-    local dir
-    local base
-    dir="$(dirname "$fpt_file")"    # Örn: /mnt/up1/folderA
-    base="$(basename "$fpt_file")"  # Örn: yenigelen.fpt
-    echo "$dir" "$base"
-}
+LOG_TMP="/tmp/rclone_out3.log"
 
 pick_random_folder() {
     local folders=( $(find "$ACCOUNTS_PARENT" -mindepth 1 -maxdepth 1 -type d) )
-    local total=${#folders[@]}
-    if [[ $total -eq 0 ]]; then
-        echo "HATA: SA klasörleri bulunamadı: $ACCOUNTS_PARENT"
+    if [[ ${#folders[@]} -eq 0 ]]; then
+        echo "HATA: SA klasörü yok => $ACCOUNTS_PARENT"
         exit 1
     fi
-    local r=$((RANDOM % total))
+    local r=$((RANDOM % ${#folders[@]}))
     echo "${folders[$r]}"
 }
 
@@ -54,175 +39,210 @@ pick_random_group_index() {
     echo $((RANDOM % MAX_GROUP_INDEX + 1))
 }
 
-# Verilen klasör + grupIndex = 6 SA dosyası
+# Grup => (g-1)*6+1 .. g*6 => *-sa-00XX@*.json
 get_group_sa_files() {
     local folder="$1"
     local g="$2"
-
     local start=$(( (g-1)*GROUP_SIZE + 1 ))
     local end=$(( g*GROUP_SIZE ))
-
     local result=()
+
     for ((i=start; i<=end; i++)); do
-        # Örn. pattern: "*-sa-0001@*.json", vs. 
-        # Basitçe "sa${i}.json" diyorsanız burada da benzer matching yapılmalı.
-        local found=( $(find "$folder" -maxdepth 1 -type f -name "*sa${i}*.json") )
+        local num=$(printf "%04d" "$i")
+        local found=( $(find "$folder" -maxdepth 1 -type f -name "*-sa-$num@*.json") )
         if [[ ${#found[@]} -gt 0 ]]; then
             result+=( "${found[0]}" )
-        else
-            echo "[WARN] Bulunamadı: grup=$g, sa$i (folder=$folder)"
         fi
     done
     echo "${result[@]}"
 }
 
-# SA mount + df ile usage ölç
 check_sa_usage() {
     local sa_file="$1"
-
     mkdir -p "$MOUNT_POINT"
     rclone mount \
-        "$UPLOAD_REMOTE" \
+        "$FINAL_REMOTE" \
         "$MOUNT_POINT" \
         --daemon \
         --drive-service-account-file "$sa_file"
-
     sleep 3
 
-    local used=$(df -h "$MOUNT_POINT" | tail -1 | awk '{print $5}' | sed 's/%//')
-    if [[ -z "$used" ]]; then
-        used=100
-    fi
-
+    local used
+    used=$(df -h "$MOUNT_POINT" | tail -1 | awk '{print $5}' | sed 's/%//')
     fusermount -u "$MOUNT_POINT" 2>/dev/null
     sleep 1
 
+    [[ -z "$used" ]] && used=100
     echo "$used"
 }
 
-# 403/429 hatalarında tekrar deneyen upload fonksiyonu
+# Tek dosya (kaynak), SA => rclone move
 upload_with_retry() {
-    local source_path="$1"
+    local src="$1"
     local sa_file="$2"
 
     while true; do
-        local output
-        output=$(rclone move \
-            "$source_path" \
-            "$UPLOAD_REMOTE" \
+        rm -f "$LOG_TMP"
+        echo "[UPLOAD] $src => $FINAL_REMOTE (SA=$sa_file)"
+
+        rclone move \
+            "$src" \
+            "$FINAL_REMOTE" \
             --drive-service-account-file "$sa_file" \
             --progress \
-            --transfers 1 \
-            --no-traverse \
-            --log-level INFO -P \
-            --exclude '/.fpt_part' \
+            --transfers 2 \
+            --max-transfer=14.3G \
+            --cutoff-mode=cautious \
             --exclude '/.txt' \
-            --exclude '/.tmp' \
-            2>&1
-        )
+            --drive-pacer-burst=1200 \
+            --drive-pacer-min-sleep=10000ms \
+            --drive-upload-cutoff 1000T \
+            --tpslimit 3 \
+            --tpslimit-burst 3 \
+            --drive-chunk-size 128M \
+            --no-traverse \
+            --log-level INFO \
+            -P \
+            2>&1 | tee "$LOG_TMP"
 
-        local status=$?
-        if [[ $status -eq 0 ]]; then
-            echo "[OK] Yükleme tamam: $source_path"
+        local rc=${PIPESTATUS[0]}
+        if [[ $rc -eq 0 ]]; then
+            echo "[OK] Yükleme tamam: $src"
             break
         else
-            if echo "$output" | grep -qE "403|429"; then
-                echo "[WARN] 403/429 hata. 1 dk bekle -> retry..."
+            if grep -q "429" "$LOG_TMP"; then
+                echo "[WARN] 429 => 1 dk bekle..."
                 sleep 60
+            elif grep -q "403" "$LOG_TMP"; then
+                echo "[WARN] 403 => daily limit / erişim hatası, 1 dk bekle..."
+                sleep 60
+            elif grep -q "max transfer limit reached" "$LOG_TMP"; then
+                echo "[ERR] Max transfer limit => pointer veya chunk yüklenemeyebilir!"
+                sleep 5
+                break
             else
-                echo "[ERR] Beklenmeyen hata, kod=$status"
-                echo "$output"
-                echo "1 dk bekle ve tekrar dene..."
-                sleep 60
+                echo "[ERR] Beklenmeyen hata, rc=$rc"
+                cat "$LOG_TMP"
+                echo "5 sn sonra tekrar dene..."
+                sleep 5
             fi
         fi
     done
 }
+
 
 ########################
 # ANA DÖNGÜ
 ########################
+
 while true; do
-    # (1) .fpt dosyası arama (alt klasörlerde olabilir)
-    new_fpt=$(find "$PARENT_WATCH_DIR" -type f -name "*.fpt" | head -n1)
-    if [[ -z "$new_fpt" ]]; then
-        echo "[INFO] Yeni .fpt yok. 15 sn bekle..."
-        sleep 15
+    # 1) /mnt/up1/ => .fpt
+    fpt_file=$(find "$WATCH_DIR" -maxdepth 1 -type f -name "*.fpt" | head -n1)
+    if [[ -z "$fpt_file" ]]; then
+        echo "[INFO] Yeni .fpt yok, 5 sn bekle..."
+        sleep 5
         continue
     fi
 
-    # .fpt hangi klasördeyse orada işlem yapacağız
-    read -r fpt_dir fpt_filename < <(get_fpt_path_info "$new_fpt")
-    echo "Yeni .fpt bulundu: $new_fpt (dizin: $fpt_dir, dosya: $fpt_filename)"
+    base_name=$(basename "$fpt_file")
+    echo "[INFO] Yeni .fpt bulundu => $base_name"
 
-    # (2) rclone move ile chunk remote kullanıp part1..part6 oluştur
-    #     .fpt dosyası bulduğu klasörde parçalanacak => chunk:/... + fpt_dir
-    echo "[INFO] .fpt parçalama başlıyor..."
-    rclone move \
-        "$new_fpt" \
-        "${CHUNK_REMOTE}${fpt_dir}/" \
-        -P
-
-    # (3) part1..part6 oluştu mu kontrol
-    missing_part=false
-    for part in "${PART_NAMES[@]}"; do
-        if [[ ! -e "$fpt_dir/$part" ]]; then
-            echo "[ERROR] Parça yok: $fpt_dir/$part"
-            missing_part=true
-        fi
-    done
-    if $missing_part; then
-        echo "[ERROR] Parçalar eksik oluştu. Bu .fpt işini iptal ediyoruz."
-        sleep 10
+    # 2) rclone move => chunk:
+    echo "[CHUNK] rclone move $fpt_file => chunk:"
+    rclone move "$fpt_file" "chunk:" -P
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+        echo "[ERR] chunker hata, kod=$rc. 5 sn bekle..."
+        sleep 5
         continue
     fi
 
-    # (4) Boş SA kümesi bul (rastgele klasör + grup)
+    # Orijinal .fpt silinir, .rclone_chunk.* + pointer .fpt chunker nereye isterse
+    # 3) chunk dosyalarını isme göre bul
+    chunk_files=( $(find / -type f -name "${base_name}.rclone_chunk.*" 2>/dev/null | sort) )
+    if [[ ${#chunk_files[@]} -eq 0 ]]; then
+        echo "[ERR] .rclone_chunk.* yok => unknown path"
+        sleep 5
+        continue
+    fi
+    echo "[INFO] Parça sayısı: ${#chunk_files[@]}"
+
+    # Pointer => same name
+    pointer_file=$(find / -type f -name "${base_name}" 2>/dev/null | head -n1)
+    if [[ -z "$pointer_file" ]]; then
+        echo "[WARN] Pointer dosyası yok => $base_name"
+    else
+        echo "[INFO] Pointer => $pointer_file"
+    fi
+
+    # 4) 6 SA grubunu bul (tek sefer)
+    six_sas=()
     while true; do
         folder=$(pick_random_folder)
         grp=$(pick_random_group_index)
-        echo "[INFO] Rastgele SA klasörü: $folder, grup: $grp"
+        echo "[INFO] Denenen => $folder, grup=$grp"
 
         SA_LIST=( $(get_group_sa_files "$folder" "$grp") )
         if [[ ${#SA_LIST[@]} -ne 6 ]]; then
-            echo "[WARN] 6 adet SA bulunamadı. Tekrar denenecek."
-            sleep 5
+            echo "[WARN] 6 SA yok => retry"
+            sleep 2
             continue
         fi
 
-        # Tüm SA'leri kontrol
         all_empty=true
-        for sa_file in "${SA_LIST[@]}"; do
-            usage=$(check_sa_usage "$sa_file")
-            echo " - $sa_file -> %$usage"
-            if [[ "$usage" -gt "$MAX_USAGE" ]]; then
-                echo "[INFO] SA dolu. Yeni grup aranacak..."
+        for sajson in "${SA_LIST[@]}"; do
+            usage=$(check_sa_usage "$sajson")
+            echo "   $sajson => %$usage"
+            if [[ $usage -gt $MAX_USAGE ]]; then
+                echo "[INFO] SA dolu => başka grup dene"
                 all_empty=false
                 break
             fi
         done
-
         if $all_empty; then
-            echo "[OK] Bu küme boş, upload'a geçiyoruz..."
+            echo "[OK] Bu 6 SA boş => kullanıyoruz"
+            six_sas=( "${SA_LIST[@]}" )
             break
         fi
-        sleep 5
+        sleep 2
     done
 
-    # (5) part1..part6'yı sırasıyla SA1..SA6 ile yükle
-    for idx in "${!PART_NAMES[@]}"; do
-        local_part="${PART_NAMES[$idx]}"
-        local_sa="${SA_LIST[$idx]}"
+    # 5) chunk i => SA[i % 6], SON PART => önce pointer, sonra chunk
+    total=${#chunk_files[@]}
+    for i in "${!chunk_files[@]}"; do
+        part_file="${chunk_files[$i]}"
+        idx=$(( i % 6 ))
+        sa_file="${six_sas[$idx]}"
 
-        echo "--------------------------------"
-        echo "[UPLOAD] $local_part -> $local_sa"
-        upload_with_retry "$fpt_dir/$local_part" "$local_sa"
+        if [[ $i -eq $(( total - 1 )) ]]; then
+            # SON PART
+            echo "[LAST PART] => önce pointer, sonra part (aynı SA)"
+
+            # 5a) pointer
+            if [[ -n "$pointer_file" && -f "$pointer_file" ]]; then
+                echo "[POINTER FIRST] => $pointer_file"
+                upload_with_retry "$pointer_file" "$sa_file"
+            fi
+
+            # 5b) part (son chunk)
+            echo "[CHUNK SECOND] => $part_file"
+            upload_with_retry "$part_file" "$sa_file"
+
+        else
+            # Normal
+            echo "[PART] $part_file => SA[$idx] => $sa_file"
+            upload_with_retry "$part_file" "$sa_file"
+        fi
     done
 
-    echo "[OK] .fpt (part1..part6) yüklemesi tamamlandı: $new_fpt"
+    # 6) Temizlik
+    for cf in "${chunk_files[@]}"; do
+        rm -f "$cf"
+    done
+    if [[ -n "$pointer_file" ]]; then
+        rm -f "$pointer_file"
+    fi
 
-    # (6) 1 dakika bekle, sonra yeni .fpt var mı diye başa dön
-    echo "[INFO] 1 dakika bekliyoruz..."
+    echo "[OK] Tüm chunk + pointer bitti => 1 dk bekle..."
     sleep "$SLEEP_BETWEEN"
-
 done
