@@ -13,16 +13,14 @@ mkdir /mnt/{temp,pw,up1,up2,up3}
 mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
+mv accounts.zip /root/
+mdkir /root/check1/
+mdkir /root/check2/
+mdkir /root/check3/
+unzip /root/accounts.zip
 screen -dmS move bash move.sh
 screen -dmS up1 bash yeniup1.sh
 screen -dmS up2 bash yeniup2.sh
 screen -dmS up3 bash yeniup3.sh
 screen -dmS bas bash start.sh
-mv accounts.zip /root/
-cd root
-mkdir check1
-mkdir check2
-mkdir check3
-unzip accounts.zip
-cd
 
