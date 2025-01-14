@@ -19,7 +19,7 @@ MOUNT_POINT="/root/check2"
 MAX_USAGE=5
 SLEEP_BETWEEN=60
 
-ACCOUNTS_PARENT="/root/accounts"
+ACCOUNTS_PARENT="/root/miyavs/accounts"
 GROUP_SIZE=6
 MAX_GROUP_INDEX=16
 
