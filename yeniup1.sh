@@ -99,7 +99,7 @@ upload_with_retry() {
             --drive-upload-cutoff 1000T \
             --tpslimit 3 \
             --tpslimit-burst 3 \
-            --drive-chunk-size 128M \
+            --drive-chunk-size 256M \
             --no-traverse \
             --log-level INFO \
             -P \
