@@ -20,7 +20,5 @@ mdkir /root/check3/
 unzip /root/accounts.zip
 screen -dmS move bash move.sh
 screen -dmS up1 bash yeniup1.sh
-screen -dmS up2 bash yeniup2.sh
-screen -dmS up3 bash yeniup3.sh
 screen -dmS bas bash start.sh
 

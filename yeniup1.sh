@@ -13,7 +13,7 @@
 #    *iki ayrı rclone move* komutu = hata yok.
 ########################################################################
 
-WATCH_DIR="/mnt/up1"
+WATCH_DIR="/mnt/pw"
 FINAL_REMOTE="crypt:"
 MOUNT_POINT="/root/check1"
 MAX_USAGE=5
