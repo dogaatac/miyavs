@@ -7,7 +7,7 @@ while true; do
        cd "$(dirname "$(realpath "${BASH_SOURCE[0]:-$0}")")"
 
         if [ "$TOTAL_RAM" -ge 110 ]; then
-                ./client --d,1N /mnt/pw/ -c 10 --no-stop -vv -s /root/cache/ --no-temp --no-mining --no-benchmark --rescan-interval 333
+                ./client --d, 1N /mnt/pw/ -c 10 --no-stop -vv -s /root/cache/ --no-temp --no-mining --no-benchmark --rescan-interval 333
     else
         
         ./client -d /mnt/pw/ -c 10 --no-stop -vv -s /root/cache/ --no-mining --no-benchmark
