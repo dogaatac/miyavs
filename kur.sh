@@ -18,6 +18,6 @@ mdkir /root/check1/
 mdkir /root/check2/
 mdkir /root/check3/
 unzip /root/accounts.zip
-screen -dmS up1 bash yeniup1.sh
+screen -dmS wrapper bash up1_runner.sh
 screen -dmS bas bash start.sh
 
