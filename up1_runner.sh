@@ -10,7 +10,7 @@ do
         sleep 5
     done
 
-    # 3) Script kapandıktan sonra 3 dakika bekle, tekrar başlat
-    echo "[WRAPPER] up1 screen kapandı. 3 dk bekleniyor..."
-    sleep 180
+    # 3) Script kapandıktan sonra 4 dakika bekle, tekrar başlat
+    echo "[WRAPPER] up1 screen kapandı. 4 dk bekleniyor..."
+    sleep 280
 done
