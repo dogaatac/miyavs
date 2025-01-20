@@ -13,7 +13,7 @@
 #    *iki ayrı rclone move* komutu = hata yok.
 ########################################################################
 
-WATCH_DIR="/mnt/up2"
+WATCH_DIR="/mnt/up2/"
 FINAL_REMOTE="crypt:"
 MOUNT_POINT="/root/check2"
 MAX_USAGE=5
@@ -149,7 +149,7 @@ while true; do
 
     # 2) rclone move => chunk:
     echo "[CHUNK] rclone move $fpt_file => chunk:"
-    rclone move "$fpt_file" "chunk:" -P
+    rclone move "$fpt_file" "chunk2:" -P
     rc=$?
     if [[ $rc -ne 0 ]]; then
         echo "[ERR] chunker hata, kod=$rc. 5 sn bekle..."

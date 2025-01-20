@@ -1,12 +1,25 @@
 #!/bin/bash
 
-WATCH_DIR="/mnt/up1"
-FINAL_REMOTE="chunk1:"
+########################################################################
+# yeniup1.sh
+#
+# 1) /mnt/up1/ dizininde yeni *.fpt dosyası var mı?
+# 2) Bulduğunda rclone move => chunk: (chunker devrede).
+#    Orijinal .fpt silinir, .rclone_chunk.* + pointer .fpt nereye isterse koyar.
+# 3) Dosya adına göre find ile chunk dosyaları ve pointer dosyasını buluruz.
+# 4) Bir kere 6 SA grubu (hepsi boş mu) buluruz.
+# 5) part i => SA[i % 6].
+# 6) Son part (i == total-1) => ÖNCE pointer, SONRA part, ikisi de AYNI SA ile
+#    *iki ayrı rclone move* komutu = hata yok.
+########################################################################
+
+WATCH_DIR="/mnt/up1/"
+FINAL_REMOTE="crypt:"
 MOUNT_POINT="/root/check1"
 MAX_USAGE=5
 SLEEP_BETWEEN=60
 
-ACCOUNTS_PARENT="/root/set/accounts"
+ACCOUNTS_PARENT="/root/miyavs/accounts"
 GROUP_SIZE=6
 MAX_GROUP_INDEX=16
 
@@ -26,6 +39,7 @@ pick_random_group_index() {
     echo $((RANDOM % MAX_GROUP_INDEX + 1))
 }
 
+# Grup => (g-1)*6+1 .. g*6 => *-sa-00XX@*.json
 get_group_sa_files() {
     local folder="$1"
     local g="$2"
@@ -62,6 +76,7 @@ check_sa_usage() {
     echo "$used"
 }
 
+# Tek dosya (kaynak), SA => rclone move
 upload_with_retry() {
     local src="$1"
     local sa_file="$2"
@@ -115,7 +130,13 @@ upload_with_retry() {
     done
 }
 
+
+########################
+# ANA DÖNGÜ
+########################
+
 while true; do
+    # 1) /mnt/up1/ => .fpt
     fpt_file=$(find "$WATCH_DIR" -maxdepth 1 -type f -name "*.fpt" | head -n1)
     if [[ -z "$fpt_file" ]]; then
         echo "[INFO] Yeni .fpt yok, 5 sn bekle..."
@@ -126,12 +147,102 @@ while true; do
     base_name=$(basename "$fpt_file")
     echo "[INFO] Yeni .fpt bulundu => $base_name"
 
-    echo "[CHUNK] rclone move $fpt_file => $FINAL_REMOTE"
-    rclone move "$fpt_file" "$FINAL_REMOTE" -P
+    # 2) rclone move => chunk:
+    echo "[CHUNK] rclone move $fpt_file => chunk:"
+    rclone move "$fpt_file" "chunk1:" -P
     rc=$?
     if [[ $rc -ne 0 ]]; then
         echo "[ERR] chunker hata, kod=$rc. 5 sn bekle..."
         sleep 5
         continue
     fi
+
+    # Orijinal .fpt silinir, .rclone_chunk.* + pointer .fpt chunker nereye isterse
+    # 3) chunk dosyalarını isme göre bul
+    chunk_files=( $(find / -type f -name "${base_name}.rclone_chunk.*" 2>/dev/null | sort) )
+    if [[ ${#chunk_files[@]} -eq 0 ]]; then
+        echo "[ERR] .rclone_chunk.* yok => unknown path"
+        sleep 5
+        continue
+    fi
+    echo "[INFO] Parça sayısı: ${#chunk_files[@]}"
+
+    # Pointer => same name
+    pointer_file=$(find / -type f -name "${base_name}" 2>/dev/null | head -n1)
+    if [[ -z "$pointer_file" ]]; then
+        echo "[WARN] Pointer dosyası yok => $base_name"
+    else
+        echo "[INFO] Pointer => $pointer_file"
+    fi
+
+    # 4) 6 SA grubunu bul (tek sefer)
+    six_sas=()
+    while true; do
+        folder=$(pick_random_folder)
+        grp=$(pick_random_group_index)
+        echo "[INFO] Denenen => $folder, grup=$grp"
+
+        SA_LIST=( $(get_group_sa_files "$folder" "$grp") )
+        if [[ ${#SA_LIST[@]} -ne 6 ]]; then
+            echo "[WARN] 6 SA yok => retry"
+            sleep 2
+            continue
+        fi
+
+        all_empty=true
+        for sajson in "${SA_LIST[@]}"; do
+            usage=$(check_sa_usage "$sajson")
+            echo "   $sajson => %$usage"
+            if [[ $usage -gt $MAX_USAGE ]]; then
+                echo "[INFO] SA dolu => başka grup dene"
+                all_empty=false
+                break
+            fi
+        done
+        if $all_empty; then
+            echo "[OK] Bu 6 SA boş => kullanıyoruz"
+            six_sas=( "${SA_LIST[@]}" )
+            break
+        fi
+        sleep 2
+    done
+
+    # 5) chunk i => SA[i % 6], SON PART => önce pointer, sonra chunk
+    total=${#chunk_files[@]}
+    for i in "${!chunk_files[@]}"; do
+        part_file="${chunk_files[$i]}"
+        idx=$(( i % 6 ))
+        sa_file="${six_sas[$idx]}"
+
+        if [[ $i -eq $(( total - 1 )) ]]; then
+            # SON PART
+            echo "[LAST PART] => önce pointer, sonra part (aynı SA)"
+
+            # 5a) pointer
+            if [[ -n "$pointer_file" && -f "$pointer_file" ]]; then
+                echo "[POINTER FIRST] => $pointer_file"
+                upload_with_retry "$pointer_file" "$sa_file"
+            fi
+
+            # 5b) part (son chunk)
+            echo "[CHUNK SECOND] => $part_file"
+            upload_with_retry "$part_file" "$sa_file"
+
+        else
+            # Normal
+            echo "[PART] $part_file => SA[$idx] => $sa_file"
+            upload_with_retry "$part_file" "$sa_file"
+        fi
+    done
+
+    # 6) Temizlik
+    for cf in "${chunk_files[@]}"; do
+        rm -f "$cf"
+    done
+    if [[ -n "$pointer_file" ]]; then
+        rm -f "$pointer_file"
+    fi
+
+    echo "[OK] Tüm chunk + pointer bitti => 1 dk bekle..."
+    sleep "$SLEEP_BETWEEN"
 done

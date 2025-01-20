@@ -15,10 +15,12 @@ mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
 mv accounts.zip /root/
+unzip /root/accounts.zip
+screen -dmS up1 bash yeniup1.sh
+screen -dmS up2 bash yeniup2.sh
+screen -dmS up3 bash yeniup3.sh
+screen -dmS bas bash start.sh
+cd /root/
 mdkir /root/check1/
 mdkir /root/check2/
 mdkir /root/check3/
-unzip /root/accounts.zip
-screen -dmS wrapper bash up1_runner.sh
-screen -dmS bas bash start.sh
-
