@@ -1,5 +1,3 @@
-mkfs.ext4 /dev/nvme1n1
-mount /dev/nvme1n1 /mnt/
 chmod 777 client
 mv client anan
 apt-get update -y
@@ -11,18 +9,16 @@ apt install unzip -y
 apt install unzip nano screen ifstat rand fuse3 nload -y
 sudo apt-get install inotify-tools -y
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
-sudo apt update -y
 mv rclone.log /root/
 mkdir /mnt/{pw,up1,up2,up3}
-mkdir /root/{check1,check2,check3,bas}
 mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
 mv accounts.zip /root/
 unzip /root/accounts.zip
-screen -dmS up1 bash yeniup1.sh
-screen -dmS up2 bash yeniup2.sh
-screen -dmS up3 bash yeniup3.sh
+screen -dmS up1 bash up1.sh
+screen -dmS up2 bash up2.sh
+screen -dmS up3 bash up3.sh
 screen -dmS move bash move.sh
 screen -dmS bas bash start.sh
 
