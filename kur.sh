@@ -1,5 +1,4 @@
 chmod 777 client
-mv client anan
 apt-get update -y
 sudo apt install git python3-pip make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y
 sudo add-apt-repository ppa:deadsnakes/ppa -y
