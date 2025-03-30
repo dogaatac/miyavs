@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Kaynak ve hedef dizinler
-SOURCE_DIR="/mnt/pw"
+SOURCE_DIR="/root/pw"
 DEST_DIRS=("/mnt/up1" "/mnt/up2" "/mnt/up3")
 
 while true; do
