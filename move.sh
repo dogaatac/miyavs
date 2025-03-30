@@ -23,5 +23,5 @@ while true; do
     fi
     
     # 60 saniye bekle
-    sleep 60
+    sleep 360
 done
