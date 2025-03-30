@@ -35,12 +35,12 @@ while true; do
         echo "Mevcut bucket adı: $BUCKET_NAME"
     fi
 
-    # Transfer işlemi başlatılıyor, log dosyası ayrı tutuluyor
+    # Transfer işlemi başlatılıyor, sadece .fpt dosyaları gönderilecek
     echo "rclone move işlemi $BUCKET_NAME bucket'ına başlatılıyor..."
     rclone move /mnt/up1/ awsx:"$BUCKET_NAME"/ \
       --transfers=3 \
       --checkers=32 \
-      --s3-chunk-size=32M \
+      --s3-chunk-size=64M \
       --fast-list \
       --multi-thread-streams=32 \
       --low-level-retries=30 \
@@ -48,7 +48,8 @@ while true; do
       --progress \
       --log-file /root/rclone_transfer.log \
       -vv \
-      --retries 1
+      --retries 1 \
+      --include "*.fpt"
 
     echo "30 saniye bekleniyor..."
     sleep 30
