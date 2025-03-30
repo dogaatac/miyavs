@@ -51,5 +51,5 @@ while true; do
       --retries 1
 
     echo "30 saniye bekleniyor..."
-    sleep 30
+    sleep 300
 done
