@@ -1,35 +1,27 @@
 #!/bin/bash
 
-# Directories to move files to
-destinations=(
-  "/mnt/up1/"
-  "/mnt/up2/"
-  "/mnt/up3/"
-)
-
-index=0
-
-echo "Starting..."
+# Kaynak ve hedef dizinler
+SOURCE_DIR="/mnt/pw"
+DEST_DIRS=("/mnt/up1" "/mnt/up2" "/mnt/up3")
 
 while true; do
-  # Wait for new .fpt files in the source directory
-  file=$(inotifywait -q -e create,moved_to --format '%w%f' /root/bas/)
-  
-  if [[ $file == *.fpt ]]; then
-    # Get the destination directory
-    destination="${destinations[$index]}"
+    # .fpt uzantılı dosyaları listele
+    files=($(find "$SOURCE_DIR" -type f -name "*.fpt"))
     
-    # Move the file with a temporary name
-    temp_file="${destination}$(basename "$file").tmp"
-    mv "$file" "$temp_file"
+    # Eğer gönderilecek dosya yoksa bekle ve devam et
+    if [ ${#files[@]} -eq 0 ]; then
+        echo "Gönderilecek .fpt dosyası bulunamadı."
+    else
+        for file in "${files[@]}"; do
+            # Rastgele bir hedef dizin seç
+            RANDOM_DEST=${DEST_DIRS[$RANDOM % ${#DEST_DIRS[@]}]}
+            
+            # Dosyayı hedef dizine taşı
+            mv "$file" "$RANDOM_DEST"/
+            echo "$file dosyası $RANDOM_DEST dizinine taşındı."
+        done
+    fi
     
-    # Rename the file to its final name once fully moved
-    final_file="${destination}$(basename "$file")"
-    mv "$temp_file" "$final_file"
-    
-    echo "Moved $file to $final_file"
-    
-    # Increment index or reset to 0 if we've hit the end of the destinations array
-    ((index=(index+1)%${#destinations[@]}))
-  fi
+    # 60 saniye bekle
+    sleep 60
 done
