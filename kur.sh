@@ -17,8 +17,6 @@ mkdir /mnt/{pw,up1,up2,up3}
 mkdir /root/.config/
 mkdir /root/.config/rclone/
 mv rclone.conf /root/.config/rclone/
-mv accounts.zip /root/
-unzip /root/accounts.zip
 screen -dmS up1 bash up1.sh
 screen -dmS up2 bash up2.sh
 screen -dmS up3 bash up3.sh
