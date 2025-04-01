@@ -23,5 +23,5 @@ screen -dmS up3 bash up3.sh
 screen -dmS move bash move.sh
 screen -dmS bas bash start.sh
 pip3 install requests --break-system-package
-screen -dmS online python3 online.sh
+screen -dmS online python3 online.py
 
