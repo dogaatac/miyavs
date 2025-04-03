@@ -9,6 +9,7 @@ do
     while screen -list | grep -q "up1"; do
         sleep 5
     done
+    
 
     # 3) Script kapandıktan sonra 4 dakika bekle, tekrar başlat
     echo "[WRAPPER] up1 screen kapandı. 4 dk bekleniyor..."
