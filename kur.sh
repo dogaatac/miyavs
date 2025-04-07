@@ -1,4 +1,4 @@
-mkdir /pw/
+mkdir /root/pw/
 chmod 777 client
 mkfs.ext4 /dev/nvme1n1
 mount /dev/nvme1n1mkfs.ext4 /dev/nvme1n1
