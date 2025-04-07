@@ -40,9 +40,9 @@ while true; do
     rclone move /mnt/up1/ awsx:"$BUCKET_NAME"/ \
       --transfers=3 \
       --checkers=32 \
-      --s3-chunk-size=64M \
+      --s3-chunk-size=128M \
       --fast-list \
-      --multi-thread-streams=32 \
+      --multi-thread-streams=8 \
       --low-level-retries=30 \
       --timeout=125s \
       --progress \
