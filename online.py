@@ -4,7 +4,7 @@ import socket
 import os
 from subprocess import check_output
 
-A_SERVER_URL = "http://144.91.120.111:5000/ping"  # A'nın IP'si yazılacak
+A_SERVER_URL = "http://212.174.10.103:5000/ping"  # A'nın IP'si yazılacak
 INTERVAL = 180  # 3 dakika (saniye cinsinden)
 
 def get_ip():
