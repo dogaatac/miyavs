@@ -1,7 +1,6 @@
 mkdir /root/pw/
 chmod 777 client
 mkfs.ext4 /dev/nvme1n1
-mount /dev/nvme1n1 mkfs.ext4 /dev/nvme1n1
 mount /dev/nvme1n1 /root/pw/
 apt-get update -y
 sudo apt install git python3-pip make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y
