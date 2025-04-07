@@ -1,6 +1,6 @@
 chmod 777 client
 mkfs.ext4 /dev/nvme1n1
-mount /dev/nvme1n1 /root/pw/
+mount /dev/nvme1n1 /mnt/pw/
 mount /dev/nvme1n1 mkfs.ext4 /dev/nvme1n1
 mount /dev/nvme1n1 /mnt/pw/
 apt-get update -y
