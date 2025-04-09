@@ -38,18 +38,18 @@ while true; do
     # Transfer işlemi başlatılıyor, sadece .fpt dosyaları gönderilecek
     echo "rclone move işlemi $BUCKET_NAME bucket'ına başlatılıyor..."
     rclone move /mnt/up2/ awsx:"$BUCKET_NAME"/ \
-      --transfers=3 \
-      --checkers=32 \
-      --s3-chunk-size=64M \
-      --fast-list \
-      --multi-thread-streams=32 \
-      --low-level-retries=30 \
-      --timeout=125s \
-      --progress \
-      --log-file /root/rclone_transfer.log \
-      -vv \
-      --retries 1 \
-      --include "*.fpt"
+    --transfers=3 \
+    --checkers=1 \
+    --s3-chunk-size=64M \
+    --fast-list \
+    --multi-thread-streams=2 \
+    --low-level-retries=30 \
+    --timeout=60s \
+    --progress \
+    --log-file /root/rclone_transfer.log \
+    -vv \
+    --retries 1 \
+    --include "*.fpt"
 
     echo "30 saniye bekleniyor..."
     sleep 30
