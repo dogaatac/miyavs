@@ -41,6 +41,6 @@ while true; do
         done
     fi
 
-    # 252 saniye bekle
-    sleep 252
+    # 111 saniye bekle
+    sleep 111
 done
