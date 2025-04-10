@@ -10,7 +10,7 @@ while true; do
                 ./client -d /mnt/pw/  -c 10 --no-stop -vv -s /root/cache/ --no-temp --no-mining --no-benchmark 
     else
         
-        ./client -d /mnt/pw/ -c 10  -vv -s /root/cache/ --no-mining --no-benchmark  --no-stop --p-threads 6
+        ./client -d /mnt/pw/ -c 10  -vv -s /root/cache/ --no-mining --no-benchmark  --no-stop --p-threads 5
     fi
 
     # 60 saniye bekle
